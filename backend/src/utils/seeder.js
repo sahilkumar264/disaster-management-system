@@ -1,4 +1,3 @@
-const mongoose = require("mongoose");
 require("dotenv").config({ path: "../../.env" });
 
 const connectDB = require("../config/db");
@@ -6,7 +5,6 @@ const connectDB = require("../config/db");
 const Shelter = require("../models/Shelter");
 const RescueTeam = require("../models/RescueTeam");
 
-// 🔥 DATA
 const shelters = [
   { name: "Gurdaspur Camp A", location: "Punjab", capacity: 800, occupied: 0, inchargeName: "Mr. Singh", contactNo: "9812340001" },
   { name: "Amritsar Relief Hub", location: "Punjab", capacity: 700, occupied: 0, inchargeName: "Ms. Kaur", contactNo: "9812340002" },
@@ -20,7 +18,6 @@ const rescueTeams = [
   { teamName: "Ludhiana Rapid Response", leaderName: "Capt. Rana", contactNo: "9811111004", assignedArea: "Ludhiana" }
 ];
 
-// 🔥 IMPORT DATA
 const importData = async () => {
   try {
     await connectDB();
@@ -31,7 +28,7 @@ const importData = async () => {
     await Shelter.insertMany(shelters);
     await RescueTeam.insertMany(rescueTeams);
 
-    console.log("✅ Data Imported");
+    console.log("Data imported");
     process.exit();
   } catch (error) {
     console.error(error);
@@ -39,5 +36,4 @@ const importData = async () => {
   }
 };
 
-// 🔥 RUN
 importData();

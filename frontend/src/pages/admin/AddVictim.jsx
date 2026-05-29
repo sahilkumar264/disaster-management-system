@@ -43,7 +43,7 @@ const AddVictim = () => {
       reset();
     } catch (error) {
       console.error(error);
-      toast.error("Failed to add victim");
+      toast.error(error.response?.data?.msg || "Failed to add victim");
     }
   };
 

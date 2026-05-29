@@ -1,6 +1,7 @@
 const Victim = require("../models/Victim");
 const Shelter = require("../models/Shelter");
 const RescueTeam = require("../models/RescueTeam");
+const cloudinary = require("../config/cloudinary");
 
 const DEFAULT_SHELTER = {
   name: "Central Relief Camp",
@@ -18,6 +19,30 @@ const DEFAULT_RESCUE_TEAM = {
   assignedArea: "Primary district",
 };
 
+const hasCloudinaryConfig = () =>
+  process.env.CLOUD_NAME &&
+  process.env.CLOUD_API_KEY &&
+  process.env.CLOUD_API_SECRET;
+
+const uploadImageToCloudinary = (file) =>
+  new Promise((resolve, reject) => {
+    const stream = cloudinary.uploader.upload_stream(
+      {
+        folder: "disaster-management/victims",
+        resource_type: "image",
+      },
+      (error, result) => {
+        if (error) {
+          return reject(error);
+        }
+
+        return resolve(result.secure_url);
+      }
+    );
+
+    stream.end(file.buffer);
+  });
+
 exports.addVictim = async (req, res) => {
   try {
     const {
@@ -28,6 +53,24 @@ exports.addVictim = async (req, res) => {
       address,
       medicalCondition,
     } = req.body;
+
+    if (req.file && !hasCloudinaryConfig()) {
+      return res.status(503).json({
+        msg: "Cloudinary is not configured. Add CLOUD_NAME, CLOUD_API_KEY, and CLOUD_API_SECRET.",
+      });
+    }
+
+    let imageUrl = req.body.imageUrl;
+
+    if (req.file) {
+      try {
+        imageUrl = await uploadImageToCloudinary(req.file);
+      } catch (error) {
+        return res.status(502).json({
+          msg: `Cloudinary upload failed: ${error.message}`,
+        });
+      }
+    }
 
     const availableShelter = await Shelter.findOne({
       $expr: { $lt: ["$occupied", "$capacity"] },
@@ -42,10 +85,6 @@ exports.addVictim = async (req, res) => {
     const [sampledRescueTeam] = rescueTeamCandidates;
     const assignedRescueTeam =
       sampledRescueTeam || (await RescueTeam.create(DEFAULT_RESCUE_TEAM));
-
-    const imageUrl = req.file
-      ? `data:${req.file.mimetype};base64,${req.file.buffer.toString("base64")}`
-      : req.body.imageUrl;
 
     const victim = await Victim.create({
       name,

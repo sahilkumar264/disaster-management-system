@@ -2,51 +2,10 @@
 
 A full-stack disaster response and relief management system with separate user and admin portals.
 
-This project allows:
+The app allows:
 
-- users to register with OTP, log in, search victim records, and donate to government relief efforts,
-- admins to log in through the admin portal, add victims, view donations, browse database tables, and generate AI-based treatment suggestions for victims.
-
-
-## Project Overview
-
-The project is split into two major parts:
-
-- `frontend`: a React + Vite web application
-- `backend`: an Express + MongoDB REST API
-
-The frontend talks to the backend through `/api` routes. Authentication is handled with JWT. Registration uses OTP verification through email. Admin access is restricted by email domain rule.
-
-## Main Features
-
-### User Features
-
-- OTP-based account creation
-- login with saved auth session
-- search victim records by name
-- open victim details
-- donate to government relief efforts
-
-### Admin Features
-
-- separate admin login page
-- admin dashboard overview
-- add victim records with image upload
-- search and inspect victim records
-- view donations
-- browse and edit database tables
-- generate AI treatment suggestions based on victim medical condition
-- view previous AI suggestion history for a victim
-
-### Security and Access Features
-
-- JWT-based authentication
-- role-based route protection
-- `@gov.in` domain required for admin role
-- OTP values stored hashed in MongoDB
-- direct `/auth/register` bypass is disabled
-- environment validation before backend startup
-- CORS restricted through configured frontend origin
+- users to register with OTP, log in, search victim records, and donate to relief efforts
+- admins to add victims, view donations, browse database tables, and generate AI-based treatment suggestions
 
 ## Tech Stack
 
@@ -71,141 +30,52 @@ The frontend talks to the backend through `/api` routes. Authentication is handl
 - bcryptjs
 - Nodemailer
 - Multer
-
-### Optional Integrations
-
-- OpenAI Responses API for treatment suggestions
-- Google auth support
-- Cloudinary config file included for future media handling
+- Cloudinary
 
 ## Project Structure
 
 ```text
 disaster-management-app/
-├── backend/
-│   ├── src/
-│   │   ├── app.js
-│   │   ├── config/
-│   │   ├── controllers/
-│   │   ├── middlewares/
-│   │   ├── models/
-│   │   ├── routes/
-│   │   ├── services/
-│   │   └── utils/
-│   ├── .env
-│   ├── .env.example
-│   ├── package.json
-│   └── server.js
-├── frontend/
-│   ├── src/
-│   │   ├── api/
-│   │   ├── components/
-│   │   ├── context/
-│   │   ├── hooks/
-│   │   ├── layouts/
-│   │   ├── pages/
-│   │   ├── routes/
-│   │   ├── App.jsx
-│   │   └── main.jsx
-│   ├── .env.example
-│   └── package.json
-└── README.md
+|-- backend/
+|   |-- src/
+|   |   |-- app.js
+|   |   |-- config/
+|   |   |-- controllers/
+|   |   |-- middlewares/
+|   |   |-- models/
+|   |   |-- routes/
+|   |   |-- services/
+|   |   `-- utils/
+|   |-- .env
+|   |-- .env.example
+|   |-- package.json
+|   `-- server.js
+|-- frontend/
+|   |-- src/
+|   |-- package.json
+|   `-- vite.config.js
+|-- .gitignore
+`-- README.md
 ```
 
-## How Roles Work
+## Roles
 
-Role assignment is decided in backend code:
+Role assignment is decided by email domain:
 
-- email ending with `@gov.in` -> `admin`
-- any other email -> `user`
+- email ending with `@gov.in` becomes `admin`
+- any other email becomes `user`
 
-That means:
+If you create an admin manually in MongoDB, make sure:
 
-- a normal Gmail or other personal email logs in as a user,
-- only a `@gov.in` email becomes admin in the normal system.
-
-## Download  the Project
-
-You can get the project in either of these ways.
-
-### Option 1: Clone with Git
-
-```bash
-git clone https://github.com/sahilkumar264/disaster-management-system
-cd disaster-management-app
-```
-
-### Option 2: Download ZIP from GitHub
-
-1. Open the GitHub repository page.
-2. Click `Code`.
-3. Click `Download ZIP`.
-4. Extract the ZIP file.
-5. Open the extracted folder in VS Code or your terminal.
-
-## Prerequisites
-
-Before running the project, install or prepare:
-
-- Node.js 18 or later recommended
-- npm
-- MongoDB local server or MongoDB Atlas connection string
-- a Gmail account with App Password if you want OTP email sending
-- optional OpenAI API key if you want AI treatment suggestions from OpenAI
-
-To check Node and npm:
-
-```bash
-node -v
-npm -v
-```
-
-## Installation
-
-Install dependencies separately for backend and frontend.
-
-### Backend install
-
-```bash
-cd backend
-npm install
-```
-
-### Frontend install
-
-```bash
-cd ../frontend
-npm install
-```
+- `email` ends with `@gov.in`
+- `role` is `admin`
+- `password` is stored as a bcrypt hash, not plain text
 
 ## Environment Variables
 
-### Backend
+Create `backend/.env` from `backend/.env.example`.
 
-Create a file named `backend/.env`.
-
-You can copy it from:
-
-- `backend/.env.example`
-
-Important backend variables:
-
-- `NODE_ENV`
-- `PORT`
-- `CLIENT_URL`
-- `MONGO_URI`
-- `JWT_SECRET`
-- `EMAIL_USER`
-- `EMAIL_PASS`
-- `OPENAI_API_KEY`
-- `OPENAI_MODEL`
-- `GOOGLE_CLIENT_ID`
-- `GOOGLE_SECRET`
-- `CLOUD_NAME`
-- `CLOUD_API_KEY`
-- `CLOUD_API_SECRET`
-
-Example backend env:
+Required backend variables:
 
 ```env
 NODE_ENV=development
@@ -224,237 +94,139 @@ CLOUD_API_KEY=
 CLOUD_API_SECRET=
 ```
 
-### Frontend
-
-Create a file named `frontend/.env`.
-
-You can copy it from:
-
-- `frontend/.env.example`
-
-Example frontend env:
+Create `frontend/.env` if needed:
 
 ```env
 VITE_API_URL=http://127.0.0.1:5000/api
 ```
 
-## How to Run the Project
+## Installation
 
-You must run backend and frontend in separate terminals.
-
-### Step 1: Start the backend
+Install backend dependencies:
 
 ```bash
 cd backend
-npm run start
+npm install
 ```
 
-Expected backend URL:
+Install frontend dependencies:
 
-- `http://127.0.0.1:5000`
+```bash
+cd ../frontend
+npm install
+```
 
-Health check:
+## Run The Project
 
-- `http://127.0.0.1:5000/api/health`
+Start the backend:
 
-### Step 2: Start the frontend
+```bash
+cd backend
+npm run dev
+```
+
+Backend URL:
+
+```text
+http://127.0.0.1:5000
+```
+
+Start the frontend:
 
 ```bash
 cd frontend
 npm run dev
 ```
 
-Expected frontend URL:
+Frontend URL:
 
-- usually `http://127.0.0.1:5173`
+```text
+http://127.0.0.1:5173
+```
 
-### Step 3: Open the application
+## Main Flows
 
-Open the frontend URL in your browser.
+### User Registration
 
-## Main Application Flows
+1. Open `/register`.
+2. Enter name, email, and password.
+3. Send OTP.
+4. Enter OTP.
+5. Create the account.
 
-### 1. User Registration with OTP
+Normal users go to `/user`. `@gov.in` users go to `/admin`.
 
-1. Open `/register`
-2. Enter name, email, and password
-3. Click `Send OTP`
-4. Enter the OTP sent to your email
-5. Click `Verify OTP & Create Account`
-6. The app redirects to:
-   - `/user` for normal users
-   - `/admin` for `@gov.in` users
+### Admin Login
 
-### 2. User Login
+1. Open `/admin/login`.
+2. Enter admin email and password.
+3. Open `/admin` after successful login.
 
-1. Open `/user/login`
-2. Enter email and password
-3. After successful login, go to `/user`
-4. From the user dashboard, access:
-   - victim search
-   - donation page
+### Add Victim
 
-### 3. Admin Login
-
-1. Open `/admin/login`
-2. Enter admin email and password
-3. After successful login, go to `/admin`
-4. From admin dashboard, access:
-   - victims
-   - add victim
-   - donations
-   - database tables
-
-### 4. Add Victim
-
-Admin can:
-
-- fill victim details,
-- upload an image,
-- submit the form.
+Admins can add victim details and upload an image.
 
 The backend:
 
-- stores the victim,
-- assigns shelter and rescue team,
-- stores image as a data URL in MongoDB.
+- uploads the victim image to Cloudinary
+- stores only the Cloudinary URL in MongoDB as `imageUrl`
+- assigns a shelter and rescue team
 
-### 5. Search Victim
-
-Users and admins can open victim details through search results.
-
-Displayed information includes:
-
-- image
-- age
-- gender
-- contact
-- address
-- medical condition
-- shelter
-- medical record
-
-## AI Treatment Suggestion Module
-
-Admins can generate treatment-support suggestions from the victim details page.
-
-How it works:
-
-- admin opens a victim record
-- backend reads victim and medical record data
-- if `OPENAI_API_KEY` exists, backend requests structured output from OpenAI
-- if no key exists or API fails, backend uses local fallback rules
-- each suggestion is saved in MongoDB
-- admin can see both latest and previous suggestions
-
-Important note:
-
-- this feature is supportive only,
-- it is not a replacement for a licensed doctor,
-- dosage is intentionally not prescribed by the system.
+This avoids storing large base64 image strings inside MongoDB.
 
 ## Available Scripts
 
-### Backend scripts
-
-```bash
-npm run start
-```
-
-Starts backend in normal mode.
+Backend:
 
 ```bash
 npm run dev
-```
-
-Starts backend with nodemon.
-
-```bash
+npm run start
 npm run seed
 ```
 
-Seeds sample shelters and rescue teams.
+`npm run seed` adds sample shelters and rescue teams. It is useful for demos but not required for the app to run.
 
-### Frontend scripts
+Frontend:
 
 ```bash
 npm run dev
-```
-
-Starts Vite development server.
-
-```bash
 npm run build
-```
-
-Builds production frontend files.
-
-```bash
 npm run preview
 ```
 
-Previews the built frontend locally.
-
-
 ## Troubleshooting
 
-### MongoDB connection issue
+### MongoDB Connection Issue
 
-If using MongoDB Atlas and backend does not start:
-
-- make sure your current IP is whitelisted in Atlas Network Access
 - confirm `MONGO_URI` is correct
+- if using Atlas, make sure your IP is allowed
+- URL-encode special characters in the MongoDB password, such as `@` as `%40`
 
-### Gmail OTP error `535-5.7.8 Username and Password not accepted`
+### Cloudinary Upload Issue
 
-This usually means Gmail rejected the SMTP login.
+- `CLOUD_NAME` must be the real Cloudinary cloud name, not the API key name or folder name
+- `CLOUD_API_KEY` must be the numeric API key
+- `CLOUD_API_SECRET` must be the API secret
+- restart the backend after changing `.env`
 
-Fix:
+### Admin Login Issue
 
-- use `EMAIL_USER` as full Gmail address
-- use `EMAIL_PASS` as Google App Password, not your normal Gmail password
-- restart backend after changing env
+- email must end with `@gov.in`
+- stored password must be bcrypt hashed
+- backend must be restarted after env/code changes
 
-### Admin login not working
+### Frontend Cannot Reach Backend
 
-Check:
-
-- email ends with `@gov.in`
-- backend was restarted after env/code changes
-- the account was created successfully through OTP flow
-
-### Frontend cannot reach backend
-
-Check:
-
-- backend is running on port `5000`
-- `VITE_API_URL` is correct
-- `CLIENT_URL` matches frontend origin
+- backend must be running on port `5000`
+- `VITE_API_URL` must point to the backend API
+- `CLIENT_URL` must match the frontend origin
 
 ## Production Notes
 
-For production deployment:
-
 - set `NODE_ENV=production`
 - use a strong `JWT_SECRET`
-- set `CLIENT_URL` to deployed frontend origin
-- configure MongoDB Atlas or production MongoDB
+- configure MongoDB Atlas or another production database
 - configure valid email credentials for OTP
-- optionally set `OPENAI_API_KEY`
-- serve frontend and backend over HTTPS in your hosting platform
-
-Important security notes:
-
-- OTP fallback for local testing has been removed
-- direct register API bypass is disabled
-- OTP values are hashed
-- admin access is controlled by email-domain rule
-
-## Short Summary
-
-This project is a role-based disaster management platform where:
-
-- users can register, log in, search victims, and donate,
-- admins can manage victim data and database records,
-- AI treatment suggestions can be generated from victim medical information,
-- the project uses React on the frontend and Express + MongoDB on the backend.
+- configure Cloudinary for victim image uploads
+- optionally set `OPENAI_API_KEY` for AI treatment suggestions
+- serve the app over HTTPS
