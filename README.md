@@ -47,7 +47,6 @@ disaster-management-app/
 |   |   |-- services/
 |   |   `-- utils/
 |   |-- .env
-|   |-- .env.example
 |   |-- package.json
 |   `-- server.js
 |-- frontend/
